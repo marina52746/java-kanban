@@ -16,7 +16,6 @@ public class Subtask extends Task {
         return oldEpicId;
     }
 
-
     public Integer getEpicId() {
         return epicId;
     }

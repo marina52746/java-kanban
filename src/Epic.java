@@ -12,7 +12,6 @@ public class Epic extends Task{
         super(name, description, status);
     }
 
-
     public ArrayList<Integer> getSubtasksIds() {
         return subtasksIds;
     }
@@ -24,9 +23,11 @@ public class Epic extends Task{
     void setStatusDone() {
         super.setStatus(TaskStatus.DONE);
     }
+
     void setStatusInProgress() {
         super.setStatus(TaskStatus.IN_PROGRESS);
     }
+
     void setStatusNew() {
         super.setStatus(TaskStatus.NEW);
     }

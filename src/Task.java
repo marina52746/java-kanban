@@ -6,12 +6,6 @@ public class Task {
     private int id;
     private TaskStatus status;
 
-
-
-    public Task() {
-        this.status = TaskStatus.NEW;
-    }
-
     public Task(String name, String description, int id, TaskStatus status) {
         this.name = name;
         this.description = description;
@@ -24,7 +18,6 @@ public class Task {
         this.description = description;
         this.status = status;
     }
-
 
     public String getName() {
         return name;

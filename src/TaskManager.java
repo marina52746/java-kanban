@@ -186,6 +186,7 @@ public class TaskManager {
         }
         subtasksById.clear();
     }
+
     public Task getTaskById(int id) {
         return tasksById.get(id);
     }
@@ -197,7 +198,6 @@ public class TaskManager {
     public Epic getEpicById(int id) {
         return epicsById.get(id);
     }
-
 
     private void updateEpicStatus(Integer epicId) {
         int statusCounter = 0;
