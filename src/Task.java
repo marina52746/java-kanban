@@ -6,15 +6,25 @@ public class Task {
     private int id;
     private TaskStatus status;
 
-    public Task(String name, String description) {
-        this.name = name;
-        this.description = description;
-        this.status = TaskStatus.NEW;
-    }
+
 
     public Task() {
         this.status = TaskStatus.NEW;
     }
+
+    public Task(String name, String description, int id, TaskStatus status) {
+        this.name = name;
+        this.description = description;
+        this.id = id;
+        this.status = status;
+    }
+
+    public Task(String name, String description, TaskStatus status) {
+        this.name = name;
+        this.description = description;
+        this.status = status;
+    }
+
 
     public String getName() {
         return name;
