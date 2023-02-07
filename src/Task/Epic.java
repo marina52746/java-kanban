@@ -1,7 +1,9 @@
+package Task;
+
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class Epic extends Task{
+public class Epic extends Task {
     private ArrayList<Integer> subtasksIds = new ArrayList<>();
 
     public Epic(String name, String description, int id, TaskStatus status) {
@@ -20,15 +22,15 @@ public class Epic extends Task{
         this.subtasksIds = subtasksIds;
     }
 
-    void setStatusDone() {
+    public void setStatusDone() {
         super.setStatus(TaskStatus.DONE);
     }
 
-    void setStatusInProgress() {
+    public void setStatusInProgress() {
         super.setStatus(TaskStatus.IN_PROGRESS);
     }
 
-    void setStatusNew() {
+    public void setStatusNew() {
         super.setStatus(TaskStatus.NEW);
     }
 
@@ -51,7 +53,7 @@ public class Epic extends Task{
 
     @Override
     public String toString() {
-        String substringTask = super.toString().substring(0, super.toString().length() - 1).replace("Task", "Epic");
+        String substringTask = super.toString().substring(0, super.toString().length() - 1).replace("Task", "Task.Epic");
         return substringTask + ", " +
                 "subtasksIds=" + subtasksIds +
                 '}';

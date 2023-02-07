@@ -1,3 +1,5 @@
+package Task;
+
 public class Subtask extends Task {
     private Integer epicId;
     private Integer oldEpicId = 0;
@@ -27,7 +29,7 @@ public class Subtask extends Task {
 
     @Override
     public String toString() {
-        String substringTask = super.toString().substring(0, super.toString().length() - 1).replace("Task", "Subtask");
+        String substringTask = super.toString().substring(0, super.toString().length() - 1).replace("Task", "Task.Task.Subtask");
         return substringTask + ", " +
                 "epicId=" + epicId +
                 '}';
