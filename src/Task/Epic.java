@@ -53,7 +53,7 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        String substringTask = super.toString().substring(0, super.toString().length() - 1).replace("Task", "Task.Epic");
+        String substringTask = super.toString().substring(0, super.toString().length() - 1).replace("Task", "Epic");
         return substringTask + ", " +
                 "subtasksIds=" + subtasksIds +
                 '}';
