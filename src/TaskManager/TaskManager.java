@@ -1,14 +1,14 @@
 package TaskManager;
-import HistoryManager.HistoryManager;
 import Task.*;
-
 import java.util.List;
 
 public interface TaskManager {
     Task createTask(Task task);
 
     Task updateTask(Task task);
+
     void deleteTask(Integer taskId);
+
     Epic createEpic(Epic epic);
 
     Epic updateEpic(Epic epic);
@@ -35,12 +35,14 @@ public interface TaskManager {
 
     void deleteAllSubtasks();
 
-    Task getTaskById(int id, HistoryManager historyManager);
+    Task getTaskById(int id);
 
-    Subtask getSubtaskById(int id, HistoryManager historyManager);
+    Subtask getSubtaskById(int id);
 
-    Epic getEpicById(int id, HistoryManager historyManager);
+    Epic getEpicById(int id);
 
     void updateEpicStatus(Integer epicId);
+
+    List<Task> getHistory();
 
 }
