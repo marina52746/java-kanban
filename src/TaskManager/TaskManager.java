@@ -35,12 +35,14 @@ public interface TaskManager {
 
     void deleteAllSubtasks();
 
-    Task getTaskById(int id, HistoryManager historyManager);
+    Task getTaskById(int id);
 
-    Subtask getSubtaskById(int id, HistoryManager historyManager);
+    Subtask getSubtaskById(int id);
 
-    Epic getEpicById(int id, HistoryManager historyManager);
+    Epic getEpicById(int id);
 
     void updateEpicStatus(Integer epicId);
+
+    List<Task> getHistory();
 
 }
