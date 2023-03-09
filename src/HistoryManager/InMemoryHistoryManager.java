@@ -2,74 +2,13 @@ package HistoryManager;
 import Task.Task;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.HashMap;
 
-class Node {
-    Node nextNode;
-    Node previousNode;
-    Task task;
-
-    public Node(Task task) {
-        nextNode = null;
-        previousNode = null;
-        this.task = task;
-    }
-}
-
-public class InMemoryHistoryManager implements HistoryManager{
-    private List<Task> CustomLinkedList = new ArrayList<>();
-    private HashMap<Integer, Node> tasksPlaceInLinkedList = new HashMap<>();
-    private Node Head = null;
-    private Node Tail = null;
-
-    Node linkLast(Task task) {
-        Node newNode = new Node(task);
-        if (Head == null) {
-            Head = newNode;
-            Tail = newNode;
-        } else {
-            Tail.nextNode = newNode;
-            newNode.previousNode = Tail;
-            Tail = newNode;
-        }
-        return newNode;
-    }
-
-    void getTasks() {
-        if (Head == null)
-            return;
-        CustomLinkedList.clear();
-        Node currentNode = Head;
-        while (true) {
-            CustomLinkedList.add(currentNode.task);
-            currentNode = currentNode.nextNode;
-            if (currentNode == null) break;
-        }
-    }
-
-    void removeNode(Node node) {
-        if (node == null) return;
-        if (node.previousNode != null) {
-            if (node.nextNode != null) {
-                node.previousNode.nextNode = node.nextNode;
-                node.nextNode.previousNode = node.previousNode;
-            } else {
-                Tail = node.previousNode;
-                node.previousNode.nextNode = null;
-            }
-        } else {
-            if (node.nextNode != null) {
-                Head = node.nextNode;
-                node.nextNode.previousNode = null;
-            } else {
-                Head = null;
-                Tail = null;
-            }
-        }
-    }
-
+public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public void add(Task task) {
+        if (task == null) return;
         if (tasksPlaceInLinkedList.containsKey(task.getId())) {
             removeNode(tasksPlaceInLinkedList.get(task.getId()));
         }
@@ -78,16 +17,73 @@ public class InMemoryHistoryManager implements HistoryManager{
 
     @Override
     public void remove(int id) {
-        removeNode(tasksPlaceInLinkedList.get(id));
-        tasksPlaceInLinkedList.remove(id);
+        removeNode(tasksPlaceInLinkedList.remove(id));
     }
 
     @Override
     public List<Task> getHistory() {
         getTasks();
-        for (Task task : CustomLinkedList)
-            System.out.print(task.getId() + " ");
-        System.out.println();
-        return CustomLinkedList;
+        return customLinkedList;
+    }
+
+    private final List<Task> customLinkedList = new ArrayList<>();
+    private final Map<Integer, Node> tasksPlaceInLinkedList = new HashMap<>();
+    private Node head = null;
+    private Node tail = null;
+
+    private static class Node {
+        Node nextNode;
+        Node previousNode;
+        Task task;
+
+        public Node(Task task) {
+            nextNode = null;
+            previousNode = null;
+            this.task = task;
+        }
+    }
+
+    private Node linkLast(Task task) {
+        Node newNode = new Node(task);
+        if (head == null) {
+            head = newNode;
+        } else {
+            tail.nextNode = newNode;
+            newNode.previousNode = tail;
+        }
+        tail = newNode;
+        return newNode;
+    }
+
+    private void getTasks() {
+        customLinkedList.clear();
+        Node currentNode = head;
+        while (currentNode != null) {
+            customLinkedList.add(currentNode.task);
+            currentNode = currentNode.nextNode;
+        }
+    }
+
+    private void removeNode(Node node) {
+        if (node == null) return;
+        final Node prev = node.previousNode;
+        final Node next = node.nextNode;
+        if (prev != null) {
+            if (next != null) {
+                prev.nextNode = next;
+                next.previousNode = prev;
+            } else {
+                tail = prev;
+                prev.nextNode = null;
+            }
+        } else {
+            if (next != null) {
+                head = next;
+                next.previousNode = null;
+            } else {
+                head = null;
+                tail = null;
+            }
+        }
     }
 }
