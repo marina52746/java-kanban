@@ -1,6 +1,6 @@
-import HistoryManager.HistoryManager;
-import Managers.Managers;
-import Task.*;
+import historyManager.HistoryManager;
+import manager.Managers;
+import task.*;
 import taskManager.*;
 
 import java.util.List;

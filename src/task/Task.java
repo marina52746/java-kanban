@@ -1,8 +1,12 @@
-package Task;
+package task;
 
 import java.util.Objects;
 
 public class Task {
+    private String name;
+    private String description;
+    private int id;
+    private TaskStatus status;
 
     public Task(String name, String description, int id, TaskStatus status) {
         this.name = name;
@@ -72,9 +76,4 @@ public class Task {
                 ", status=" + status +
                 '}';
     }
-
-    private String name;
-    private String description;
-    private int id;
-    private TaskStatus status;
 }

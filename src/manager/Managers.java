@@ -1,5 +1,5 @@
-package Managers;
-import HistoryManager.*;
+package manager;
+import historyManager.*;
 import taskManager.*;
 
 public class Managers {

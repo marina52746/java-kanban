@@ -1,13 +1,16 @@
 package taskManager;
-import HistoryManager.HistoryManager;
-import Managers.Managers;
-import Task.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import historyManager.HistoryManager;
+import manager.Managers;
+import task.*;
+
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager{
+    private int currentTaskId = 0;
+    private final HistoryManager historyManager = Managers.getDefaultHistory();
+    private final Map<Integer, Task> tasksById = new HashMap<>();
+    private final Map<Integer, Epic> epicsById = new HashMap<>();
+    private final Map<Integer, Subtask> subtasksById = new HashMap<>();
 
     @Override
     public Task createTask(Task task) {
@@ -87,15 +90,10 @@ public class InMemoryTaskManager implements TaskManager{
             System.out.println("Подзадачи с таким номером не существует. Обновление невозможно.");
             return null;
         }
-        if (subtask.getEpicId() != oldSubtask.getEpicId()) {
+        if (!Objects.equals(subtask.getEpicId(), oldSubtask.getEpicId())) {
             final Epic oldEpic = epicsById.get(oldSubtask.getEpicId());
             final Epic newEpic = epicsById.get(subtask.getEpicId());
-            for (int i = 0; i < oldEpic.getSubtasksIds().size(); i++) {
-                if (oldEpic.getSubtasksIds().get(i) == subtask.getId()) {
-                    oldEpic.getSubtasksIds().remove(i);
-                    break;
-                }
-            }
+            oldEpic.getSubtasksIds().remove((Integer)subtask.getId());
             newEpic.getSubtasksIds().add(subtask.getId());
             updateEpicStatus(oldEpic.getId());
             updateEpicStatus(newEpic.getId());
@@ -228,10 +226,4 @@ public class InMemoryTaskManager implements TaskManager{
     public List<Task> getHistory() {
         return historyManager.getHistory();
     }
-
-    private int currentTaskId = 0;
-    private HistoryManager historyManager = Managers.getDefaultHistory();
-    private final Map<Integer, Task> tasksById = new HashMap<>();
-    private final Map<Integer, Epic> epicsById = new HashMap<>();
-    private final Map<Integer, Subtask> subtasksById = new HashMap<>();
 }
