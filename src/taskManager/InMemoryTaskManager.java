@@ -2,7 +2,6 @@ package taskManager;
 import historyManager.HistoryManager;
 import manager.Managers;
 import task.*;
-
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager{
@@ -116,8 +115,6 @@ public class InMemoryTaskManager implements TaskManager{
         updateEpicStatus(epic.getId());
         historyManager.remove(subtaskId);
     }
-
-
 
     @Override
     public List<Task> getAllTasks() {
