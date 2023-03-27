@@ -5,11 +5,11 @@ import task.*;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager{
-    private int currentTaskId = 0;
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
-    private final Map<Integer, Task> tasksById = new HashMap<>();
-    private final Map<Integer, Epic> epicsById = new HashMap<>();
-    private final Map<Integer, Subtask> subtasksById = new HashMap<>();
+    private static int currentTaskId;
+    final HistoryManager historyManager = Managers.getDefaultHistory(this);
+    public final Map<Integer, Task> tasksById = new HashMap<>();
+    public final Map<Integer, Epic> epicsById = new HashMap<>();
+    public final Map<Integer, Subtask> subtasksById = new HashMap<>();
 
     @Override
     public Task createTask(Task task) {

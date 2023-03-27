@@ -18,11 +18,13 @@ public class InMemoryHistoryManager implements HistoryManager {
             removeNode(tasksPlaceInLinkedList.get(task.getId()));
         }
         tasksPlaceInLinkedList.put(task.getId(), linkLast(task));
+        getTasks();
     }
 
     @Override
     public void remove(int id) {
         removeNode(tasksPlaceInLinkedList.remove(id));
+        getTasks();
     }
 
     @Override
