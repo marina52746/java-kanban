@@ -1,5 +1,7 @@
 package task;
 
+import exceptions.ManagerSaveException;
+
 import java.util.Objects;
 
 public class Task {
@@ -88,27 +90,31 @@ public class Task {
                 '}';
     }
 
-    public static Task fromString(String taskString) throws Exception {
+    public static Task fromString(String taskString) throws ManagerSaveException {
         String[] elems = taskString.split(",");
         Task task;
-        switch (elems[1]) {
-            case "TASK":
-                task = new Task(elems[2], elems[4], IntFromString(elems[0]), StatusFromString(elems[3]));
-                break;
-            case "EPIC":
-                task = new Epic(elems[2], elems[4], IntFromString(elems[0]));
-                break;
-            case "SUBTASK":
-                task = new Subtask(elems[2], elems[4], IntFromString(elems[0]), StatusFromString(elems[3]),
-                        IntFromString(elems[5]));
-                break;
-            default:
-                throw new Exception(elems[0] + " can't convert to task type");
+        try {
+            switch (elems[1]) {
+                case "TASK":
+                    task = new Task(elems[2], elems[4], IntFromString(elems[0]), StatusFromString(elems[3]));
+                    break;
+                case "EPIC":
+                    task = new Epic(elems[2], elems[4], IntFromString(elems[0]));
+                    break;
+                case "SUBTASK":
+                    task = new Subtask(elems[2], elems[4], IntFromString(elems[0]), StatusFromString(elems[3]),
+                            IntFromString(elems[5]));
+                    break;
+                default:
+                    task = null;
+            }
+        } catch (Exception e) {
+            throw new ManagerSaveException(elems[0] + " can't convert to task type");
         }
         return task;
     }
 
-    public static TaskStatus StatusFromString(String str) throws Exception {
+    public static TaskStatus StatusFromString(String str) throws ManagerSaveException {
         switch (str) {
             case "NEW":
                 return TaskStatus.NEW;
@@ -117,16 +123,16 @@ public class Task {
             case "DONE":
                 return TaskStatus.DONE;
             default:
-                throw new Exception(str + " can't convert to task status");
+                throw new ManagerSaveException(str + " can't convert to task status");
         }
     }
 
-    public static int IntFromString(String str) throws Exception {
+    public static int IntFromString(String str) throws ManagerSaveException {
         int i;
         try {
             i = Integer.parseInt(str);
         } catch (NumberFormatException e) {
-            throw new Exception(str + " can't convert to int id");
+            throw new ManagerSaveException(str + " can't convert to int id");
         }
         return i;
     }

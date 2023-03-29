@@ -1,25 +1,26 @@
 package taskManager;
+import exceptions.ManagerSaveException;
 import task.*;
 import java.util.List;
 
 public interface TaskManager {
-    Task createTask(Task task);
+    Task createTask(Task task) throws ManagerSaveException;
 
-    Task updateTask(Task task);
+    Task updateTask(Task task) throws ManagerSaveException;
 
-    void deleteTask(Integer taskId);
+    void deleteTask(Integer taskId) throws ManagerSaveException;
 
-    Epic createEpic(Epic epic);
+    Epic createEpic(Epic epic) throws ManagerSaveException;
 
-    Epic updateEpic(Epic epic);
+    Epic updateEpic(Epic epic) throws ManagerSaveException;
 
-    void deleteEpic(Integer epicId);
+    void deleteEpic(Integer epicId) throws ManagerSaveException;
 
-    Subtask createSubtask(Subtask subtask);
+    Subtask createSubtask(Subtask subtask) throws ManagerSaveException;
 
-    Subtask updateSubtask(Subtask subtask);
+    Subtask updateSubtask(Subtask subtask) throws ManagerSaveException;
 
-    void deleteSubtask(Integer subtaskId);
+    void deleteSubtask(Integer subtaskId) throws ManagerSaveException;
 
     List<Task> getAllTasks();
 
@@ -29,19 +30,19 @@ public interface TaskManager {
 
     List<Subtask> getEpicSubtasks(Integer epicId);
 
-    void deleteAllTasks();
+    void deleteAllTasks() throws ManagerSaveException;
 
-    void deleteAllEpics();
+    void deleteAllEpics() throws ManagerSaveException;
 
-    void deleteAllSubtasks();
+    void deleteAllSubtasks() throws ManagerSaveException;
 
-    Task getTaskById(int id);
+    Task getTaskById(int id) throws ManagerSaveException;
 
-    Subtask getSubtaskById(int id);
+    Subtask getSubtaskById(int id) throws ManagerSaveException;
 
-    Epic getEpicById(int id);
+    Epic getEpicById(int id) throws ManagerSaveException;
 
-    void updateEpicStatus(Integer epicId);
+    void updateEpicStatus(Integer epicId) throws ManagerSaveException;
 
     List<Task> getHistory();
 

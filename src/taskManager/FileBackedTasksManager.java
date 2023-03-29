@@ -1,80 +1,89 @@
 package taskManager;
+import exceptions.ManagerSaveException;
 import historyManager.FileBackedHistoryManager;
 import task.Epic;
 import task.Subtask;
 import task.Task;
 import task.TaskStatus;
 import java.io.*;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
-    private final Path path;
+    private final File file;
 
-    public FileBackedTasksManager(Path path) throws FileNotFoundException {
-        this.path = path;
+    public FileBackedTasksManager(File file) {
+        this.file = file;
     }
 
-    public static FileBackedTasksManager loadFromFile(Path path) throws IOException, Exception {
-        FileBackedTasksManager tasksManager = new FileBackedTasksManager(path);
+    public static FileBackedTasksManager loadFromFile(File file) throws ManagerSaveException {
+        FileBackedTasksManager tasksManager = new FileBackedTasksManager(file);
         String line;
-        List<String> lines = new ArrayList<>();
-        FileReader reader = new FileReader(path.toString());
-        BufferedReader br = new BufferedReader(reader);
         boolean isFirstLine = true;
         boolean isLastLine = false;
-        while (br.ready()) {
-            line = br.readLine();
-            if (isFirstLine) {
-                isFirstLine = false;
-                continue;
-            }
-            if (line.isBlank() || line.isEmpty()) {
-                isLastLine = true;
-                continue;
-            }
-            if (!isLastLine)
-                lines.add(line);
-            else {
-                //in lines - all tasks, in line - history
-                for (String taskString : lines) {
-                    Task task = Task.fromString(taskString);
-                    switch (task.getType()) {
-                        case TASK:
-                            tasksManager.tasksById.put(task.getId(), task);
-                            break;
-                        case EPIC:
-                            tasksManager.epicsById.put(task.getId(), (Epic)task);
-                            break;
-                        case SUBTASK:
-                            tasksManager.subtasksById.put(task.getId(), (Subtask) task);
-                            break;
+        List<String> lines = new ArrayList<>();
+        try {
+            FileReader reader = new FileReader(file.getAbsolutePath());
+            BufferedReader br = new BufferedReader(reader);
+            while (br.ready()) {
+                line = br.readLine();
+                if (isFirstLine) {
+                    isFirstLine = false;
+                    continue;
+                }
+                if (line.isEmpty()) {
+                    isLastLine = true;
+                    continue;
+                }
+                if (!isLastLine)
+                    lines.add(line);
+                else {
+                    //in lines - all tasks, in line - history
+                    int maxId = 0;
+                    for (String taskString : lines) {
+                        Task task = Task.fromString(taskString);
+                        if (task.getId() > maxId)   maxId = task.getId();
+                        switch (task.getType()) {
+                            case TASK:
+                                tasksManager.tasksById.put(task.getId(), task);
+                                break;
+                            case EPIC:
+                                tasksManager.epicsById.put(task.getId(), (Epic)task);
+                                break;
+                            case SUBTASK:
+                                tasksManager.subtasksById.put(task.getId(), (Subtask) task);
+                                break;
+                        }
+                    }
+                    InMemoryTaskManager.currentTaskId = maxId;
+                    List<Integer> tasksIdsHistory = FileBackedHistoryManager.historyFromString(line);
+                    for(Integer taskId : tasksIdsHistory) {
+                        if (tasksManager.tasksById.containsKey(taskId)) {
+                            Task task = tasksManager.tasksById.get(taskId);
+                            tasksManager.historyManager.add(task);
+                        }
+                        if (tasksManager.epicsById.containsKey(taskId)) {
+                            Epic epic = tasksManager.epicsById.get(taskId);
+                            tasksManager.historyManager.add(epic);
+                        }
+                        if (tasksManager.subtasksById.containsKey(taskId)) {
+                            Subtask subtask = tasksManager.subtasksById.get(taskId);
+                            tasksManager.historyManager.add(subtask);
+                        }
                     }
                 }
-                List<Integer> tasksIdsHistory = FileBackedHistoryManager.historyFromString(line);
-                for(Integer taskId : tasksIdsHistory) {
-                    if (tasksManager.tasksById.containsKey(taskId)) {
-                        Task task = tasksManager.tasksById.get(taskId);
-                        tasksManager.historyManager.add(task);
-                    }
-                    if (tasksManager.epicsById.containsKey(taskId)) {
-                        Epic epic = tasksManager.epicsById.get(taskId);
-                        tasksManager.historyManager.add(epic);
-                    }
-                    if (tasksManager.subtasksById.containsKey(taskId)) {
-                        Subtask subtask = tasksManager.subtasksById.get(taskId);
-                        tasksManager.historyManager.add(subtask);
-                    }
-                }
             }
+            br.close();
+        } catch (ManagerSaveException e) {
+            System.out.println("Can't load file " + file.getAbsolutePath());
+        } catch (Exception e) {
+            throw new ManagerSaveException();
         }
-        br.close();
         return tasksManager;
     }
 
-    public static void main(String[] args) throws Exception {
-        TaskManager taskManager = new FileBackedTasksManager(Path.of("resources/tasks_file.csv"));
+    public static void main(String[] args) throws ManagerSaveException {
+        TaskManager taskManager = new FileBackedTasksManager(new File("resources/tasks_file.csv"));
 
         Task task1 = new Task("Задача1", "Описание задачи1", TaskStatus.IN_PROGRESS);
         task1 = taskManager.createTask(task1);
@@ -105,119 +114,113 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         taskManager.getTaskById(1);
         taskManager.getEpicById(3);
 
-        FileBackedTasksManager taskManager2 = FileBackedTasksManager.loadFromFile(Path.of("resources/tasks_file.csv"));
+        FileBackedTasksManager taskManager2 = FileBackedTasksManager.loadFromFile(new File("resources/tasks_file.csv"));
     }
 
 
     @Override
-    public Task createTask(Task task) {
+    public Task createTask(Task task) throws ManagerSaveException {
         super.createTask(task);
         save();
         return task;
     }
 
     @Override
-    public Task updateTask(Task task) {
+    public Task updateTask(Task task) throws ManagerSaveException {
         super.updateTask(task);
         save();
         return task;
     }
 
     @Override
-    public void deleteTask(Integer taskId) {
+    public void deleteTask(Integer taskId) throws ManagerSaveException {
         super.deleteTask(taskId);
         save();
     }
 
     @Override
-    public Epic createEpic(Epic epic) {
+    public Epic createEpic(Epic epic) throws ManagerSaveException {
         super.createEpic(epic);
         save();
         return epic;
     }
 
     @Override
-    public Epic updateEpic(Epic epic) {
+    public Epic updateEpic(Epic epic) throws ManagerSaveException {
         super.updateEpic(epic);
         save();
         return epic;
     }
 
     @Override
-    public void deleteEpic(Integer epicId) {
+    public void deleteEpic(Integer epicId) throws ManagerSaveException {
         super.deleteEpic(epicId);
         save();
     }
 
     @Override
-    public Subtask createSubtask(Subtask subtask) {
+    public Subtask createSubtask(Subtask subtask) throws ManagerSaveException {
         super.createSubtask(subtask);
         save();
         return subtask;
     }
 
     @Override
-    public Subtask updateSubtask(Subtask subtask) {
+    public Subtask updateSubtask(Subtask subtask) throws ManagerSaveException {
         super.updateSubtask(subtask);
         save();
         return subtask;
     }
 
     @Override
-    public void deleteSubtask(Integer subtaskId) {
+    public void deleteSubtask(Integer subtaskId) throws ManagerSaveException {
         super.deleteSubtask(subtaskId);
         save();
     }
 
     @Override
-    public Task getTaskById(int id) {
+    public Task getTaskById(int id) throws ManagerSaveException {
         Task task = super.getTaskById(id);
         save();
         return task;
     }
 
     @Override
-    public Subtask getSubtaskById(int id) {
+    public Subtask getSubtaskById(int id) throws ManagerSaveException {
         Subtask subtask = super.getSubtaskById(id);
         save();
         return subtask;
     }
 
     @Override
-    public Epic getEpicById(int id) {
+    public Epic getEpicById(int id) throws ManagerSaveException {
         Epic epic = super.getEpicById(id);
         save();
         return epic;
     }
 
-    public void deleteAllTasks() {
+    public void deleteAllTasks() throws ManagerSaveException {
         super.deleteAllTasks();
         save();
     }
 
-    public void deleteAllEpics() {
+    public void deleteAllEpics() throws ManagerSaveException {
         super.deleteAllEpics();
         save();
     }
 
-    public void deleteAllSubtasks() {
+    public void deleteAllSubtasks() throws ManagerSaveException {
         super.deleteAllSubtasks();
         save();
     }
 
     @Override
-    public void updateEpicStatus(Integer epicId) {
+    public void updateEpicStatus(Integer epicId) throws ManagerSaveException {
         super.updateEpicStatus(epicId);
         save();
     }
 
-    class ManagerSaveException extends RuntimeException {
-        public ManagerSaveException(final String message) {
-            super(message);
-        }
-    }
-
-    private void save() {
+    private void save() throws ManagerSaveException {
         try (BufferedWriter writer = getWriter()) {
             saveTasksToFile(writer);
         } catch (IOException e) {
@@ -225,31 +228,39 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private BufferedWriter getWriter() throws IOException {
-        return new BufferedWriter(
-                new FileWriter(path.toFile())
-        );
+    private BufferedWriter getWriter() throws ManagerSaveException {
+        try {
+            return new BufferedWriter(
+                    new FileWriter(file)
+            );
+        } catch (IOException e) {
+            throw new ManagerSaveException();
+        }
+
     }
 
-    private void saveTasksToFile(BufferedWriter writer) throws IOException {
-        writer.write(Task.Dto.HEADER);
-        writer.write("\n");
+    private void saveTasksToFile(BufferedWriter writer) throws ManagerSaveException {
+        try {
+            writer.write(Task.Dto.HEADER);
+            writer.write("\n");
 
-        for (Task task : tasksById.values()) {
-            writer.write(Task.Dto.cons(task).asString());
+            for (Task task : tasksById.values()) {
+                writer.write(Task.Dto.cons(task).asString());
+                writer.write("\n");
+            }
+            for (Epic epic : epicsById.values()) {
+                writer.write(Task.Dto.cons(epic).asString());
+                writer.write("\n");
+            }
+            for (Subtask subtask : subtasksById.values()) {
+                writer.write(Task.Dto.cons(subtask).asString());
+                writer.write("\n");
+            }
             writer.write("\n");
+            writer.write(FileBackedHistoryManager.historyToString(historyManager));
+        } catch (IOException e) {
+            throw new ManagerSaveException("Can't write to file " + file.getAbsolutePath());
         }
-        for (Epic epic : epicsById.values()) {
-            writer.write(Task.Dto.cons(epic).asString());
-            writer.write("\n");
-        }
-        for (Subtask subtask : subtasksById.values()) {
-            writer.write(Task.Dto.cons(subtask).asString());
-            writer.write("\n");
-        }
-        writer.write("\n");
-        writer.write(FileBackedHistoryManager.historyToString(historyManager));
+
     }
-
-
 }

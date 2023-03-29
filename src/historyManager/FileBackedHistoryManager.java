@@ -1,16 +1,12 @@
 package historyManager;
+import exceptions.ManagerSaveException;
 import task.Task;
 import java.util.ArrayList;
 import java.util.List;
 import java.nio.file.Path;
 
 
-public class FileBackedHistoryManager extends InMemoryHistoryManager {
-    private final Path path;
-
-    public FileBackedHistoryManager(Path path) {
-        this.path = path;
-    }
+public class FileBackedHistoryManager {
 
     public static String historyToString(HistoryManager manager) {
         String str;
@@ -25,7 +21,7 @@ public class FileBackedHistoryManager extends InMemoryHistoryManager {
         return str;
     }
 
-    public static List<Integer> historyFromString(String value) throws Exception {
+    public static List<Integer> historyFromString(String value) throws ManagerSaveException {
         List<Integer> ids = new ArrayList<>();
         String[] str = value.split(",");
         for (String str_el : str) {
@@ -34,7 +30,7 @@ public class FileBackedHistoryManager extends InMemoryHistoryManager {
                 i = Integer.parseInt(str_el);
                 ids.add(i);
             } catch (Exception e) {
-                throw new Exception("can't convert string " + value + " to tasks ids");
+                throw new ManagerSaveException("Can't convert string " + value + " to tasks ids");
             }
         }
         return ids;
