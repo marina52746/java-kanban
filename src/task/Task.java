@@ -1,7 +1,7 @@
 package task;
-
 import exceptions.ManagerSaveException;
-
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task {
@@ -10,20 +10,26 @@ public class Task {
     private int id;
     private TaskStatus status;
     private TaskType type;
+    private long duration;
+    private LocalDateTime startTime;
 
-    public Task(String name, String description, int id, TaskStatus status) {
+    public Task(String name, String description, int id, TaskStatus status, long duration, LocalDateTime startTime) {
         this.name = name;
         this.description = description;
         this.id = id;
         this.status = status;
         this.type = TaskType.TASK;
+        this.duration = duration;
+        this.startTime = startTime;
     }
 
-    public Task(String name, String description, TaskStatus status) {
+    public Task(String name, String description, TaskStatus status, long duration, LocalDateTime startTime) {
         this.name = name;
         this.description = description;
         this.status = status;
         this.type = TaskType.TASK;
+        this.duration = duration;
+        this.startTime = startTime;
     }
 
     public String getName() {
@@ -66,50 +72,33 @@ public class Task {
         this.status = status;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Task task = (Task) o;
-        return id == task.id && Objects.equals(name, task.name) && Objects.equals(description, task.description)
-                && status == task.status;
-    }
+    public long getDuration() { return duration; }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, description, id, status);
-    }
+    public void setDuration(long duration) { this.duration = duration; }
 
-    @Override
-    public String toString() {
-        return "Task{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", id=" + id +
-                ", status=" + status +
-                '}';
+    public LocalDateTime getStartTime() { return startTime; }
+
+    public void setStartTime(LocalDateTime startTime) { this.startTime = startTime; }
+
+    public LocalDateTime getEndTime() {
+        return startTime.plusMinutes(duration);
     }
 
     public static Task fromString(String taskString) throws ManagerSaveException {
         String[] elems = taskString.split(",");
-        Task task;
-        try {
-            switch (elems[1]) {
-                case "TASK":
-                    task = new Task(elems[2], elems[4], IntFromString(elems[0]), StatusFromString(elems[3]));
-                    break;
-                case "EPIC":
-                    task = new Epic(elems[2], elems[4], IntFromString(elems[0]));
-                    break;
-                case "SUBTASK":
-                    task = new Subtask(elems[2], elems[4], IntFromString(elems[0]), StatusFromString(elems[3]),
-                            IntFromString(elems[5]));
-                    break;
-                default:
-                    task = null;
-            }
-        } catch (Exception e) {
-            throw new ManagerSaveException(elems[0] + " can't convert to task type");
+        Task task = null;
+        switch (elems[1]) {
+            case "TASK":
+                task = new Task(elems[2], elems[4], IntFromString(elems[0]), StatusFromString(elems[3]),
+                        IntFromString(elems[5]), elems[6].equals("null") ? null : LocalDateTime.parse(elems[6], formatter));
+                break;
+            case "EPIC":
+                task = new Epic(elems[2], elems[4], IntFromString(elems[0]));
+                break;
+            case "SUBTASK":
+                task = new Subtask(elems[2], elems[4], IntFromString(elems[0]), StatusFromString(elems[3]),
+                        IntFromString(elems[5]), elems[6].equals("null") ? null :LocalDateTime.parse(elems[6], formatter), IntFromString(elems[7]));
+                break;
         }
         return task;
     }
@@ -137,6 +126,36 @@ public class Task {
         return i;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return id == task.id && duration == task.duration && Objects.equals(name, task.name)
+                && Objects.equals(description, task.description) && status == task.status && type == task.type
+                && Objects.equals(startTime, task.startTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, description, id, status, type, duration, startTime);
+    }
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", id=" + id +
+                ", status=" + status +
+                ", type=" + type +
+                ", duration=" + duration +
+                ", startTime=" + startTime +
+                '}';
+    }
+
+    public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+
     public static final class Dto {
         public static final String HEADER = "id,type,name,status,description,epic";
         private final int id;
@@ -145,6 +164,8 @@ public class Task {
         private final String status;
         private final String description;
         private final String epic; // not null for subtasks
+        private final long duration;
+        private final String startTime;
 
         public Dto(Task task) {
             this.id = task.getId();
@@ -155,6 +176,9 @@ public class Task {
             this.epic = task instanceof Subtask
                     ? ((Subtask) task).getEpicId().toString()
                     : "";
+            this.duration = task.getDuration();
+            if (task.startTime == null) this.startTime = "null";
+            else this.startTime = task.startTime.format(formatter);
         }
 
         public static Dto cons(Task task) {
@@ -163,12 +187,14 @@ public class Task {
 
         public String asString() {
             return String.format(
-                    "%s,%s,%s,%s,%s,%s",
+                    "%s,%s,%s,%s,%s,%s,%s,%s",
                     id,
                     type,
                     name,
                     status,
                     description,
+                    duration,
+                    startTime,
                     epic
             );
         }

@@ -44,6 +44,8 @@ public interface TaskManager {
 
     void updateEpicStatus(Integer epicId) throws ManagerSaveException;
 
+    void updateDurationEpicStartTimeEndTime(Integer epicId) throws ManagerSaveException;
+
     List<Task> getHistory();
 
 }

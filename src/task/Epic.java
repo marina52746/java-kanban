@@ -1,17 +1,19 @@
 package task;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class Epic extends Task {
     private ArrayList<Integer> subtasksIds = new ArrayList<>();
+    private LocalDateTime endTime;
 
     public Epic(String name, String description, int id) {
-        super(name, description, id, TaskStatus.NEW);
+        super(name, description, id, TaskStatus.NEW, 0, null);
         setType(TaskType.EPIC);
     }
 
     public Epic(String name, String description) {
-        super(name, description, TaskStatus.NEW);
+        super(name, description, TaskStatus.NEW, 0, null);
         setType(TaskType.EPIC);
     }
 
@@ -39,17 +41,24 @@ public class Epic extends Task {
     public void setStatus(TaskStatus status) {}
 
     @Override
+    public LocalDateTime getEndTime() { return endTime; }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         Epic epic = (Epic) o;
-        return Objects.equals(subtasksIds, epic.subtasksIds);
+        return Objects.equals(subtasksIds, epic.subtasksIds) && Objects.equals(endTime, epic.endTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), subtasksIds);
+        return Objects.hash(super.hashCode(), subtasksIds, endTime);
     }
 
     @Override
@@ -57,6 +66,7 @@ public class Epic extends Task {
         String substringTask = super.toString().substring(0, super.toString().length() - 1).replace("task", "Epic");
         return substringTask + ", " +
                 "subtasksIds=" + subtasksIds +
+                ", endTime=" + endTime +
                 '}';
     }
 }

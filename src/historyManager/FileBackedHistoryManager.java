@@ -3,8 +3,6 @@ import exceptions.ManagerSaveException;
 import task.Task;
 import java.util.ArrayList;
 import java.util.List;
-import java.nio.file.Path;
-
 
 public class FileBackedHistoryManager {
 
