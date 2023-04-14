@@ -440,7 +440,7 @@ public abstract class TaskManagerTest<TTaskManager extends TaskManager> {
         subtask2 = taskManager.createSubtask(subtask2);
         assertTrue(epic.getStartTime().equals(LocalDateTime.of(2022,10,25,5,0))
         && epic.getEndTime().equals(LocalDateTime.of(2022, 10, 25, 17, 30))
-        && epic.getDuration() == 750);
+        && epic.getDuration() == 720);
         final Subtask[] subtask3 = {new Subtask("Test StartEndDurationSubtask3",
                 "Test StartEndDurationSubtask3 description", NEW, 240,
                 LocalDateTime.of(2022, 10, 25, 15, 0), epicId)};

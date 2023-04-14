@@ -99,8 +99,6 @@ public class InMemoryTaskManager implements TaskManager{
     public void deleteTask(Integer taskId) throws ManagerSaveException {
         if (tasksById.get(taskId) == null) {
             throw new ManagerSaveException("Нельзя удалить задачу с номером " + taskId + ", её нет в списке");
-            //System.out.println("Нельзя удалить задачу с номером " + taskId + ", её нет в списке");
-            //return;
         }
         prioritizedTasks.remove(tasksById.get(taskId));
         tasksById.remove(taskId);
@@ -119,8 +117,6 @@ public class InMemoryTaskManager implements TaskManager{
         final Epic updateEpic = epicsById.get(epic.getId());
         if (updateEpic == null) {
             throw new ManagerSaveException("Эпика с таким номером не существует. Обновление невозможно.");
-            //System.out.println("Эпика с таким номером не существует. Обновление невозможно.");
-            //return null;
         }
         updateEpic.setDescription(epic.getDescription());
         updateEpic.setName(epic.getName());
@@ -132,8 +128,6 @@ public class InMemoryTaskManager implements TaskManager{
         final Epic epic = epicsById.remove(epicId);
         if (epic == null) {
             throw new ManagerSaveException("Нельзя удалить эпик с номером " + epicId + ", его нет в списке");
-            //System.out.println("Нельзя удалить эпик с номером " + epicId + ", его нет в списке");
-            //return;
         }
         if (epic.getSubtasksIds() != null) {
             for (Integer subtaskId : epic.getSubtasksIds()) {
@@ -196,8 +190,6 @@ public class InMemoryTaskManager implements TaskManager{
         final Subtask subtask = subtasksById.remove(subtaskId);
         if (subtask == null) {
             throw new ManagerSaveException("Нельзя удалить подзадачу с номером " + subtaskId + ", её нет в списке");
-            //System.out.println("Нельзя удалить подзадачу с номером " + subtaskId + ", её нет в списке");
-            //return;
         }
         final Epic epic = epicsById.get(subtask.getEpicId());
         if (epic.getSubtasksIds() != null) {
@@ -316,17 +308,20 @@ public class InMemoryTaskManager implements TaskManager{
     public void updateDurationEpicStartTimeEndTime(Integer epicId) throws ManagerSaveException {
         LocalDateTime start = null;
         LocalDateTime end = null;
+        long epicDuration = 0;
         Epic epic = epicsById.get(epicId);
         for (Integer subtaskId : epic.getSubtasksIds()) {
-            if (start == null || subtasksById.get(subtaskId).getStartTime().isBefore(start))
+            if (start == null || subtasksById.get(subtaskId).getStartTime() != null
+                    && subtasksById.get(subtaskId).getStartTime().isBefore(start))
                 start = subtasksById.get(subtaskId).getStartTime();
-            if (end == null || subtasksById.get(subtaskId).getEndTime().isAfter(end))
+            if (end == null || subtasksById.get(subtaskId).getEndTime() != null
+                    && subtasksById.get(subtaskId).getEndTime().isAfter(end))
                 end = subtasksById.get(subtaskId).getEndTime();
+            epicDuration += subtasksById.get(subtaskId).getDuration();
         }
         epic.setStartTime(start);
         epic.setEndTime(end);
-        if(start == null || end == null) epic.setDuration(0);
-        else epic.setDuration(java.time.Duration.between(start, end).toMinutes()); //!!!!!!!
+        epic.setDuration(epicDuration);
     }
 
     @Override
