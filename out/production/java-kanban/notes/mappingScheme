@@ -1,0 +1,43 @@
+
+    +Task createTask(Task task), Task updateTask(Task task)  -> POST /tasks/task/ Body: {task...}
+
+    +void deleteTask(Integer taskId) -> DELETE /tasks/task/?id=...
+
+    +Epic createEpic(Epic epic), Epic updateEpic(Epic epic) -> POST /tasks/epic/ Body: {epic...}
+
+    +void deleteEpic(Integer epicId) -> DELETE /tasks/epic/?id=...
+
+    +Subtask createSubtask(Subtask subtask), Subtask updateSubtask(Subtask subtask) -> POST /tasks/subtask/ Body: {subtask...}
+
+    +void deleteSubtask(Integer subtaskId) -> DELETE /tasks/subtask/?id=...
+
+    +List<Task> getAllTasks() -> GET /tasks/task/
+
+    +List<Epic> getAllEpics() -> GET /tasks/epic/
+
+    +List<Subtask> getAllSubtasks() -> GET /tasks/subtask/
+
+    +List<Subtask> getEpicSubtasks(Integer epicId) -> GET /tasks/subtask/epic/?id=...
+
+    +void deleteAllTasks() -> DELETE /tasks/task/
+
+    +void deleteAllEpics() -> DELETE /tasks/epic/
+
+    +void deleteAllSubtasks() -> DELETE /tasks/subtask/
+
+    +Task getTaskById(int id) -> GET /tasks/task/?id=...
+
+    +Subtask getSubtaskById(int id) -> GET /tasks/subtask/?id=...
+
+    +Epic getEpicById(int id) -> GET /tasks/epic/?id=...
+
+    +List<Task> getHistory() -> GET /tasks/history/
+
+    +Set<Task> getPrioritizedTasks() -> GET /tasks/
+
+
+    Subtask methods -> /tasks/subtask/
+
+    Epic methods -> /tasks/epic/
+
+

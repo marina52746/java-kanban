@@ -193,7 +193,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         save();
     }
 
-    private void save() throws ManagerSaveException {
+    void save() throws ManagerSaveException {
         try (BufferedWriter writer = getWriter()) {
             saveTasksToFile(writer);
         } catch (IOException e) {

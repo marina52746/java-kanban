@@ -2,6 +2,7 @@ package taskManager;
 import exceptions.ManagerSaveException;
 import task.*;
 import java.util.List;
+import java.util.Set;
 
 public interface TaskManager {
     Task createTask(Task task) throws ManagerSaveException;
@@ -47,5 +48,7 @@ public interface TaskManager {
     void updateDurationEpicStartTimeEndTime(Integer epicId) throws ManagerSaveException;
 
     List<Task> getHistory();
+
+    Set<Task> getPrioritizedTasks() throws ManagerSaveException;
 
 }

@@ -198,5 +198,40 @@ public class Task {
                     epic
             );
         }
+
+        public Task toTask() {
+            LocalDateTime startTime;
+            if (this.startTime == null || this.startTime.equals("null")) startTime = null;
+            else startTime = LocalDateTime.parse(this.startTime, formatter);
+            try {
+                switch (type) {
+                    case "TASK":
+                        return new Task(name, description, status(status), duration, startTime);
+                    case "SUBTASK":
+                        return new Subtask(name, description, status(status), duration, startTime,
+                                Integer.parseInt(epic));
+                    case "EPIC":
+                        return new Epic(name, description);
+                    default:
+                        return null;
+                }
+            } catch (ManagerSaveException e) {
+                System.out.println("ManagerSaveException");
+                return null;
+            }
+        }
+
+        public static TaskStatus status(String dtoStatus) throws ManagerSaveException {
+            switch (dtoStatus) {
+                case "NEW":
+                    return TaskStatus.NEW;
+                case "IN_PROGRESS":
+                    return TaskStatus.IN_PROGRESS;
+                case "DONE":
+                    return TaskStatus.DONE;
+                default:
+                    throw new ManagerSaveException("Incorrect status");
+            }
+        }
     }
 }

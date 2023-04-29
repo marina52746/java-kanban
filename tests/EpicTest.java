@@ -15,6 +15,9 @@ class EpicTest {
 
     public TaskManager taskManager = Managers.getDefault();
 
+    EpicTest() throws ManagerSaveException {
+    }
+
     @Test
     void statusWhenListSubtasksEmpty() throws ManagerSaveException {
         Epic epic = new Epic("epic1", "new epic");
