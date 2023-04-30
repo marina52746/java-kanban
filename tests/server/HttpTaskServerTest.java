@@ -1,5 +1,4 @@
 package server;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import exceptions.ManagerSaveException;
@@ -10,7 +9,6 @@ import task.Subtask;
 import task.Task;
 import task.TaskStatus;
 import taskManager.TaskManager;
-
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URI;
@@ -20,11 +18,10 @@ import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-// Не понимаю: когда запускаю тесты по одному - они работают,
-// а когда запускаю все вместе - проходит только один тест...
+
+
 class HttpTaskServerTest {
     private HttpTaskServer taskServer;
     private TaskManager taskManager;

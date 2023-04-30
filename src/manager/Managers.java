@@ -32,7 +32,7 @@ public class Managers {
     }
 
     public static TaskManager getServerTaskManager()  {
-        return new HttpTaskManager(KEY_VALUE_URL);
+        return new HttpTaskManager(KEY_VALUE_URL, true);
     }
 
     public static HistoryManager getDefaultHistory() {

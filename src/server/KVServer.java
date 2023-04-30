@@ -24,7 +24,7 @@ public class KVServer implements Closeable {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         server.stop(0);
     }
 
@@ -35,7 +35,7 @@ public class KVServer implements Closeable {
         server.start();
     }
 
-    public void stop() throws IOException {
+    public void stop() {
         server.stop(0);
         System.out.println("KVServer stopped");
     }
@@ -55,7 +55,7 @@ public class KVServer implements Closeable {
                     h.sendResponseHeaders(400, 0);
                     return;
                 }
-                String value = data.get(key); //readText(h);
+                String value = data.get(key);
                 if (value.isEmpty()) {
                     System.out.println("Значение по указанному ключу " + key + " пустое или не найдено");
                     h.sendResponseHeaders(400, 0);

@@ -1,12 +1,12 @@
 package taskManager;
 import com.google.gson.Gson;
+import exceptions.ManagerSaveException;
 import manager.Managers;
 import server.KVTaskClient;
 import task.Epic;
 import task.Subtask;
 import task.Task;
 import task.Task.Dto;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,10 +15,11 @@ public class HttpTaskManager extends FileBackedTasksManager {
     private static final String KEY = "key-saving-task-manager-state";
     private final KVTaskClient kvClient;
 
-    public HttpTaskManager(String kvUrl) {
+    public HttpTaskManager(String kvUrl, boolean needLoad) {
         super(null);
         this.kvClient = new KVTaskClient(kvUrl);
-        load();
+        if (needLoad)
+            load();
     }
     public void load() {
         try {
@@ -46,13 +47,12 @@ public class HttpTaskManager extends FileBackedTasksManager {
     }
 
     @Override
-    public void save() {
+    public void save() throws ManagerSaveException {
         try {
             kvClient.put(KEY, new StateDto(tasksById.values(), subtasksById.values(),
                     epicsById.values(), getHistory()).asString());
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Can't save");
+            throw new ManagerSaveException("Can't save values on KVServer");
         }
     }
 

@@ -1,7 +1,6 @@
 package server;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import exceptions.ManagerSaveException;
 import manager.Managers;
@@ -11,7 +10,6 @@ import task.Task;
 import taskManager.TaskManager;
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.net.InetSocketAddress;
 import java.util.*;
@@ -46,7 +44,7 @@ public class HttpTaskServer implements Closeable {
     }
 
     @Override
-    public void close() throws IOException { //???
+    public void close() {
         httpServer.stop(0);
         System.out.println("Server stopped");
     }
@@ -130,7 +128,6 @@ public class HttpTaskServer implements Closeable {
         try {
             Task.Dto subtaskToCreate = gson.fromJson(body, Task.Dto.class);
             Subtask added = taskManager.createSubtask((Subtask)subtaskToCreate.toTask());
-            //Subtask added = taskManager.createSubtask((Subtask)Task.Dto.toTask(subtaskToCreate));
             writeJsonResponse(exchange, gson.toJson(new Task.Dto(added)));
         } catch (IOException e) {
             throw e;
@@ -400,10 +397,6 @@ public class HttpTaskServer implements Closeable {
         byte[] response = text.getBytes(StandardCharsets.UTF_8);
         exchange.sendResponseHeaders(200, response.length);
         exchange.getResponseBody().write(response);
-    }
-
-    private void badRequest(HttpExchange exchange) throws IOException {
-        exchange.sendResponseHeaders(400, 0);
     }
 
     private void notFound(HttpExchange exchange) throws IOException {
